@@ -5,7 +5,8 @@ import os
 #Width of screen
 pygame.init()
 WIDTH = 900
-DEPTH = 4
+DEPTH1 = 5
+DEPTH2 = 5
 #best_move = ((),())
 #Set display window
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
@@ -49,9 +50,9 @@ def draw(win, width, board):
 
 #Check ganh
 def check_ganh(board, player, move):
-    #Check cac duong cheo
     i = move[1][0]
     j = move[1][1]
+    #Check cac duong cheo
     if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
         if not (i == 4 or j == 4 or i == 0 or j == 0):
             #Duong cheo tren xuong duoi, trai sang phai
@@ -68,41 +69,64 @@ def check_ganh(board, player, move):
     if not (j == 0 or j == 4):
         if board[i][j+1] == -player and board[i][j-1] == -player:
             board[i][j+1] = board[i][j-1] = player
-    return board 
-
 #Check xem 1 quan co co the di chuyen duoc hay khong
 def can_move(board, player, position):
     #Check duong cheo
     i = position[0]
     j = position[1]
+    a = False
     if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
-        if i > 0 and j > 0 and board[i - 1][j-1] == 0:
-            return True
-        if i < 4 and j < 4 and board[i+1][j+1] == 0:
-            return True
-        if i > 0 and j < 4 and board[i-1][j + 1] == 0:
-            return True
-        if i < 4 and j > 0 and board[i+1][j-1] == 0:
-            return True
+        if i > 0 and j > 0:
+            if board[i - 1][j-1] == 0:
+                return True
+            elif board[i-1][j-1] == -player:
+                a = True
+        if i < 4 and j < 4:
+            if board[i+1][j+1] == 0:
+                return True
+            elif board[i+1][j+1] == -player:
+                a = True
+        if i > 0 and j < 4:
+            if board[i-1][j + 1] == 0:
+                return True
+            elif board[i-1][j+1] == -player:
+                a= True
+        if i < 4 and j > 0:
+            if board[i+1][j-1] == 0:
+                return True
+            elif board[i+1][j-1] == -player:
+                a = True
     #Check doc
-    if i > 0 and board[i-1][j] == 0:
-        return True
-    if i < 4 and board[i+1][j] == 0:
-        return True
+    if i > 0:
+        if board[i-1][j] == 0:
+            return True
+        elif board[i-1][j] == -player:
+            a = True
+    if i < 4:
+        if board[i+1][j] == 0:
+            return True
+        elif board[i+1][j] == -player:
+            a = True
     #Check ngang
-    if j > 0 and board[i][j-1] == 0:
-        return True
-    if j < 4 and board[i][j+1] == 0:
-        return True
-    return False
+    if j > 0:
+        if board[i][j-1] == 0:
+            return True
+        elif board[i][j-1] == -player:
+            a = True
+    if j < 4:
+        if board[i][j+1] == 0:
+            return True
+        elif board[i][j+1] == -player:
+            a = True
+    if a == True:
+        return False
 
-#Check vay
+#Check vay #TODO continue improve not done yet
 def check_vay(board, player, move):
     for i in range(5):
         for j in range(5):
             if board[i][j] == -player and not can_move(board, -player, (i,j)):
                 board[i][j] = player
-    return board
 
 
 #Check terminate
@@ -212,8 +236,6 @@ def algorithm(board, player, depth):
     if player == 1:
         max_ = -math.inf
         for move in moves:
-            if depth == DEPTH:
-                print(move)
             if legal_move(board, player, move):
                 board__=[list(x) for x in board_]
                 board_change(board__, player, move)
@@ -222,7 +244,7 @@ def algorithm(board, player, depth):
                 a = algorithm(board__, -player, depth-1)
                 if max_ < a:
                     max_ = a
-                    if(depth == DEPTH):
+                    if(depth == DEPTH1):
                         global best_move_max
                         best_move_max = move
         return max_
@@ -239,7 +261,7 @@ def algorithm(board, player, depth):
                 a = algorithm(board__, -player, depth-1)
                 if min_ > a:
                     min_ = a
-                    if(depth == DEPTH):
+                    if(depth == DEPTH2):
                         global best_move_min
                         best_move_min = move   
         return min_
@@ -248,8 +270,10 @@ def algorithm(board, player, depth):
 
 #aimove
 def ai_move(board, player):
-    
-    a = algorithm(board, player, DEPTH)
+    if player == 1:
+        algorithm(board, player, DEPTH1)
+    elif player == -1:
+        algorithm(board, player, DEPTH2)
     if player == 1:
         return best_move_max
     elif player == -1:
@@ -259,10 +283,10 @@ def ai_move(board, player):
 def move(board, player):
     if(player == 1):
         print("It's white's move ")
-        return ai_move(board, player)
+        return human_move(board, player)
     else:
         print("It's black's move ")
-        return human_move(board, player)
+        return ai_move(board, player)
     
 
 
@@ -275,7 +299,7 @@ def main(win, width):
             [-1, 0, 0, 0, -1],
             [-1, -1, -1, -1, -1]]
     player = 0
-    while True:
+    while not terminate(board):
         draw(win, width, board)
         if player == 0:
             player = 1
@@ -288,6 +312,6 @@ def main(win, width):
         board[tuple_[0][0]][tuple_[0][1]] = 0
         board[tuple_[1][0]][tuple_[1][1]] = player
         check_ganh(board, player, tuple_)
-        #check_vay(board, player, tuple_)
+        check_vay(board, player, tuple_)
 
 main(WIN, WIDTH)
