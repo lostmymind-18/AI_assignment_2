@@ -51,13 +51,20 @@ def draw(win, width, board):
 
 #humanmove
 def humanmove(board, player):
-    print("chose a piece(y,x): ")
+    print("chose a piece(y,x): ")#pick up position
     y = int(input())
     x = int(input())
-    while(board[x][y])
-    print("chose new position(y,x): ")
+    while board[y][x] != player:
+        print("chose again: ")
+        y = int(input())
+        x = int(input())
+    print("chose new position(y,x): ")#put on position
     y_ = int(input())
     x_ = int(input())
+    while board[y][x] != 0:
+        print("chose again: ")
+        y_ = int(input())
+        x_ = int(input())
     return ((y,x),(y_,x_))
 #aimove
 #def aimove(board, player):
