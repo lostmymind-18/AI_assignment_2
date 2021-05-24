@@ -17,6 +17,8 @@ GREY = (128, 128, 128)
 YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 
+best_move_max = ((),())
+best_move_min = ((),())
 #Draw grid
 def draw(win, width, board):
     gap = (width - 100) // 4
@@ -195,10 +197,10 @@ def board_change(board, player, move):
 #algorithm -- minimax
 
 def algorithm(board, player, depth):
-    #move:
-    moves = posible_moves(board, player) 
     #valuation 
     board_ = [list(x) for x in board]
+     #move:
+    moves = posible_moves(board_, player) 
     if depth == 0 or terminate(board_) == True:
         a = 0
         for row in board_:
@@ -210,17 +212,19 @@ def algorithm(board, player, depth):
     if player == 1:
         max_ = -math.inf
         for move in moves:
-            print(move)
+            if depth == DEPTH:
+                print(move)
             if legal_move(board, player, move):
                 board__=[list(x) for x in board_]
-                board__= board_change(board__, player, move)
-                board__=check_ganh(board__, player, move)
-                board__=check_vay(board__, player, move)
+                board_change(board__, player, move)
+                check_ganh(board__, player, move)
+                check_vay(board__, player, move)
                 a = algorithm(board__, -player, depth-1)
                 if max_ < a:
                     max_ = a
-                    global best_move_max
-                    best_move_max = move
+                    if(depth == DEPTH):
+                        global best_move_max
+                        best_move_max = move
         return max_
     #Min
     elif player == -1:
@@ -229,14 +233,15 @@ def algorithm(board, player, depth):
             #print(move)
             if legal_move(board, player, move):
                 board__=[list(x) for x in board_]
-                board__ = board_change(board__, player, move)
-                board__ = check_ganh(board__,player, move)
-                board__ = check_vay(board__, player, move)
+                board_change(board__, player, move)
+                check_ganh(board__,player, move)
+                check_vay(board__, player, move)
                 a = algorithm(board__, -player, depth-1)
                 if min_ > a:
                     min_ = a
-                    global best_move_min
-                    best_move_min = move   
+                    if(depth == DEPTH):
+                        global best_move_min
+                        best_move_min = move   
         return min_
 
     
@@ -283,6 +288,6 @@ def main(win, width):
         board[tuple_[0][0]][tuple_[0][1]] = 0
         board[tuple_[1][0]][tuple_[1][1]] = player
         check_ganh(board, player, tuple_)
-        check_vay(board, player, tuple_)
+        #check_vay(board, player, tuple_)
 
 main(WIN, WIDTH)
