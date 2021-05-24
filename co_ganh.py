@@ -42,10 +42,33 @@ def draw(win, width, board):
                 pygame.draw.circle(win, WHITE,(50+j*gap,50+i*gap),30)
             if board[i][j] == -1:
                 pygame.draw.circle(win, BLACK,(50+j*gap,50+i*gap),30)
-
     pygame.display.update()
 
+#Check ganh
+#def check_ganh(board):
+
 #Check terminate
+
+#humanmove
+def humanmove(board, player):
+    print("chose a piece(y,x): ")
+    x = int(input())
+    y = int(input())
+    print("chose new position(y,x): ")
+    x_ = int(input())
+    y_ = int(input())
+    return ((x,y),(x_,y_))
+#aimove
+#def aimove(board, player):
+
+#move 
+def move(board, player):
+    if(player == 1):
+        print("It's white's move ")
+        return humanmove(board, player)
+    else:
+        print("It's black's move ")
+        return humanmove(board, player)
 #main
 def main(win, width):
     #os.system("Clear")
@@ -54,7 +77,18 @@ def main(win, width):
             [1, 0, 0, 0, -1],
             [-1, 0, 0, 0, -1],
             [-1, -1, -1, -1, -1]]
+    player = 0
     while True:
         draw(win, width, board)
+        if player == 0:
+            player = 1
+        elif player == 1:
+            player = -1
+        elif player == -1:
+            player = 1
+        tuple_ = move(board, player)
+        board[tuple_[0][0]][tuple_[0][1]] = 0
+        board[tuple_[1][0]][tuple_[1][1]] = player
+        #check_ganh(board)
 
 main(WIN, WIDTH)
