@@ -66,6 +66,125 @@ class FlagCarry():
                             break
                     if (allAreEnemies):
                         newBoard[i][j] = enemy_val
+    #Check xem 1 quan co co the di chuyen duoc hay khong
+
+    def can_move(self, board, player, position):
+        #Check duong cheo
+        i = position[0]
+        j = position[1]
+        a = False
+        if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
+            if i > 0 and j > 0:
+                if board[i - 1][j-1] == 0:
+                    return True
+                elif board[i-1][j-1] == -player:
+                    a = True
+            if i < 4 and j < 4:
+                if board[i+1][j+1] == 0:
+                    return True
+                elif board[i+1][j+1] == -player:
+                    a = True
+            if i > 0 and j < 4:
+                if board[i-1][j + 1] == 0:
+                    return True
+                elif board[i-1][j+1] == -player:
+                    a = True
+            if i < 4 and j > 0:
+                if board[i+1][j-1] == 0:
+                    return True
+                elif board[i+1][j-1] == -player:
+                    a = True
+        #Check doc
+        if i > 0:
+            if board[i-1][j] == 0:
+                return True
+            elif board[i-1][j] == -player:
+                a = True
+        if i < 4:
+            if board[i+1][j] == 0:
+                return True
+            elif board[i+1][j] == -player:
+                a = True
+        #Check ngang
+        if j > 0:
+            if board[i][j-1] == 0:
+                return True
+            elif board[i][j-1] == -player:
+                a = True
+        if j < 4:
+            if board[i][j+1] == 0:
+                return True
+            elif board[i][j+1] == -player:
+                a = True
+        return False
+
+    def check_vay_(self, board, player, list_, check_list, already_check):
+        if list_[2] == 1:
+            return 1
+
+        #If list_ co the di chuyen,return 1
+        if self.can_move(board, player, (list_[0], list_[1])):
+            list_[2] = 1
+            return 1
+
+        #If list_ khong the di chuyen
+        if not self.can_move(board, player, (list_[0], list_[1])):
+            a = False
+            i = list_[0]
+            j = list_[1]
+            for list__ in check_list:
+                if list__ not in already_check and list__ != list_:
+                    #Xet theo duong cheo
+                    already_check_ = [list(x) for x in already_check]
+                    already_check_.append(list__)
+                    if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
+                        if i+1 == list__[0] and j+1 == list__[1]:
+                            a = (a or self.check_vay_(board, player,
+                                 list__, check_list, already_check_))
+                        if i-1 == list__[0] and j+1 == list__[1]:
+                            a = (a or self.check_vay_(board, player,
+                                 list__, check_list, already_check_))
+                        if i+1 == list__[0] and j-1 == list__[1]:
+                            a = (a or self.check_vay_(board, player,
+                                 list__, check_list, already_check_))
+                        if i-1 == list__[0] and j-1 == list__[1]:
+                            a = (a or self.check_vay_(board, player,
+                                 list__, check_list, already_check_))
+                    #Xet theo duong ngang doc
+                    if i+1 == list__[0] and j == list__[1]:
+                        a = (a or self.check_vay_(board, player,
+                             list__, check_list, already_check_))
+                    if i-1 == list__[0] and j == list__[1]:
+                        a = (a or self.check_vay_(board, player,
+                             list__, check_list, already_check_))
+                    if i == list__[0] and j-1 == list__[1]:
+                        a = (a or self.check_vay_(board, player,
+                             list__, check_list, already_check_))
+                    if i == list__[0] and j+1 == list__[1]:
+                        a = (a or self.check_vay_(board, player,
+                             list__, check_list, already_check_))
+            #if list_ bi co lap
+            if a == False:
+                list_[2] = 0
+                return 0
+            elif a == True:
+                list_[2] = 1
+                return 1
+
+    #Check vay
+    def check_vay(self, board, player):
+        check_list = []
+        for i in range(5):
+            for j in range(5):
+                if board[i][j] == -player:
+                    check_list.append([i, j, 0])
+        for list_ in check_list:
+            if list_[2] == 0:
+                self.check_vay_(board, -player, list_, check_list, [])
+        for list_ in check_list:
+            if list_[2] == 0:
+                board[list_[0]][list_[1]] = player
+
 
     def getNewBoard(self, board, move, isMax):
         newBoard = copy.deepcopy(board)
@@ -89,6 +208,7 @@ class FlagCarry():
         self.checkGanh(newBoard, myVal, enemyVal, posA, posB)
 
         # TODO: Check vay
+        self.check_vay(newBoard, myVal)
 
         return newBoard
 
