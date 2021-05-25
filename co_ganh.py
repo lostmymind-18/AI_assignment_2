@@ -1,6 +1,7 @@
 import pygame
 import math
 import os
+from FlagCarry import FlagCarry
 
 #Width of screen
 pygame.init()
@@ -272,64 +273,60 @@ def board_change(board, player, move):
 
 #algorithm -- minimax
 
-def algorithm(board, player, depth):
-    #valuation 
-    board_ = [list(x) for x in board]
-     #move:
-    moves = posible_moves(board_, player) 
-    if depth == 0 or terminate(board_) == True:
-        a = 0
-        for row in board_:
-            for cell in row:
-                a = a + cell
-        return a
+# def algorithm(board, player, depth):
+#     #valuation
+#     board_ = [list(x) for x in board]
+#      #move:
+#     moves = posible_moves(board_, player)
+#     if depth == 0 or terminate(board_) == True:
+#         a = 0
+#         for row in board_:
+#             for cell in row:
+#                 a = a + cell
+#         return a
 
-    #Max
-    if player == 1:
-        max_ = -math.inf
-        for move in moves:
-            if legal_move(board, player, move):
-                board__=[list(x) for x in board_]
-                board_change(board__, player, move)
-                check_ganh(board__, player, move)
-                check_vay(board__, player, move)
-                a = algorithm(board__, -player, depth-1)
-                if max_ < a:
-                    max_ = a
-                    if(depth == DEPTH1):
-                        global best_move_max
-                        best_move_max = move
-        return max_
-    #Min
-    elif player == -1:
-        min_ = math.inf
-        for move in moves:
-            #print(move)
-            if legal_move(board, player, move):
-                board__=[list(x) for x in board_]
-                board_change(board__, player, move)
-                check_ganh(board__,player, move)
-                check_vay(board__, player, move)
-                a = algorithm(board__, -player, depth-1)
-                if min_ > a:
-                    min_ = a
-                    if(depth == DEPTH2):
-                        global best_move_min
-                        best_move_min = move   
-        return min_
+#     #Max
+#     if player == 1:
+#         max_ = -math.inf
+#         for move in moves:
+#             if legal_move(board, player, move):
+#                 board__=[list(x) for x in board_]
+#                 board_change(board__, player, move)
+#                 check_ganh(board__, player, move)
+#                 check_vay(board__, player, move)
+#                 a = algorithm(board__, -player, depth-1)
+#                 if max_ < a:
+#                     max_ = a
+#                     if(depth == DEPTH1):
+#                         global best_move_max
+#                         best_move_max = move
+#         return max_
+#     #Min
+#     elif player == -1:
+#         min_ = math.inf
+#         for move in moves:
+#             #print(move)
+#             if legal_move(board, player, move):
+#                 board__=[list(x) for x in board_]
+#                 board_change(board__, player, move)
+#                 check_ganh(board__,player, move)
+#                 check_vay(board__, player, move)
+#                 a = algorithm(board__, -player, depth-1)
+#                 if min_ > a:
+#                     min_ = a
+#                     if(depth == DEPTH2):
+#                         global best_move_min
+#                         best_move_min = move
+#         return min_
 
     
 
 #aimove
 def ai_move(board, player):
     if player == 1:
-        algorithm(board, player, DEPTH1)
+        return FlagCarry(3, board, True).move()
     elif player == -1:
-        algorithm(board, player, DEPTH2)
-    if player == 1:
-        return best_move_max
-    elif player == -1:
-        return best_move_min
+        return FlagCarry(3, board, False).move()
 
 #move 
 def move(board, player):
