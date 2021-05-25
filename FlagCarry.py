@@ -142,4 +142,4 @@ initialBoard = [[1, 1, 0, 1, 1],
                 [-1, 0, 1, -1, 1],
                 [-1, -1, 1, 1, 1]]
 
-FlagCarry(7, initialBoard, True).move()
+#FlagCarry(7, initialBoard, True).move()
