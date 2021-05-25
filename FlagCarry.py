@@ -100,25 +100,31 @@ class FlagCarry():
 
         if (isMax):
             val = -1000
+            best_val = -1000
             for move in possibleMoves:
                 newBoard = self.getNewBoard(board, move, isMax)
                 val = self.helper(newBoard, not isMax,
                                   currentDepth+1, alpha, beta)[0]
+                if (best_val < val):
                 best_move = move
+                    best_val = val
                 if (alpha < val):
                     alpha = val
                 # Minimum won't allow max to go this way
                 if (alpha >= beta):
                     break
-            return (val, best_move)
+            return (best_val, best_move)
 
         # Minimum
         val = 1000
+        best_val = 1000
         for move in possibleMoves:
             newBoard = self.getNewBoard(board, move, isMax)
             val = self.helper(newBoard, not isMax,
                               currentDepth+1, alpha, beta)[0]
+            if (best_val > val):
             best_move = move
+                best_val = val 
             if (beta > val):
                 beta = val
             # Maximum won't allow min to go this way
