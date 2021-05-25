@@ -96,6 +96,10 @@ class FlagCarry():
         if (currentDepth >= self.d):
             return (self.countVal(board), 0)
         possibleMoves = self.getPossibleMoves(isMax, board)
+        if (len(possibleMoves) == 0):
+            if (isMax):
+                return (0, 0)
+            return (16, 0)
         best_move = possibleMoves[0]
 
         if (isMax):
