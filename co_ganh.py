@@ -5,8 +5,8 @@ import os
 #Width of screen
 pygame.init()
 WIDTH = 900
-DEPTH1 = 5
-DEPTH2 = 5
+DEPTH1 = 4
+DEPTH2 = 1
 #best_move = ((),())
 #Set display window
 WIN = pygame.display.set_mode((WIDTH,WIDTH))
@@ -118,15 +118,67 @@ def can_move(board, player, position):
             return True
         elif board[i][j+1] == -player:
             a = True
-    if a == True:
-        return False
+    return False
 
-#Check vay #TODO continue improve not done yet
+
+def check_vay_(board, player, list_, check_list, already_check):
+    if list_[2] == 1:
+        return 1
+
+    #If list_ co the di chuyen,return 1
+    if can_move(board, player, (list_[0],list_[1])):
+        list_[2] = 1
+        return 1
+
+    #If list_ khong the di chuyen
+    if not can_move(board, player, (list_[0],list_[1])):
+        a = False
+        i = list_[0]
+        j = list_[1]
+        for list__ in check_list:
+            if list__ not in already_check and list__ != list_:
+            #Xet theo duong cheo
+                already_check_ = [list(x) for x in already_check]
+                already_check_.append(list__)
+                if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
+                    if i+1 == list__[0] and j+1 == list__[1]:
+                        a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                    if i-1 == list__[0] and j+1 == list__[1]:
+                        a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                    if i+1 == list__[0] and j-1 == list__[1]:
+                        a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                    if i-1 == list__[0] and j-1 == list__[1]:
+                        a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                #Xet theo duong ngang doc
+                if i+1==list__[0] and j==list__[1]:
+                    a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                if i-1==list__[0] and j==list__[1]:
+                    a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                if i==list__[0] and j-1==list__[1]:
+                    a = (a or check_vay_(board, player, list__, check_list, already_check_))
+                if i==list__[0] and j+1==list__[1]:
+                    a = (a or check_vay_(board, player, list__, check_list, already_check_))
+        #if list_ bi co lap
+        if a == False:
+            list_[2] = 0
+            return 0
+        elif a == True:
+            list_[2] = 1
+            return 1
+
+#Check vay
 def check_vay(board, player, move):
+    check_list= []
     for i in range(5):
         for j in range(5):
-            if board[i][j] == -player and not can_move(board, -player, (i,j)):
-                board[i][j] = player
+            if board[i][j] == -player:
+                check_list.append([i,j,0])
+    for list_ in check_list:
+        if list_[2] == 0:
+            check_vay_(board, -player, list_, check_list, [])
+    for list_ in check_list:
+        if list_[2] == 0:
+            board[list_[0]][list_[1]] = player 
 
 
 #Check terminate
@@ -283,7 +335,7 @@ def ai_move(board, player):
 def move(board, player):
     if(player == 1):
         print("It's white's move ")
-        return human_move(board, player)
+        return ai_move(board, player)
     else:
         print("It's black's move ")
         return ai_move(board, player)
@@ -296,7 +348,7 @@ def main(win, width):
     board = [[1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1],
             [1, 0, 0, 0, -1],
-            [-1, 0, 0, 0, -1],
+            [ -1, 0, 0, 0, -1],
             [-1, -1, -1, -1, -1]]
     player = 0
     while not terminate(board):
@@ -308,10 +360,11 @@ def main(win, width):
         elif player == -1:
             player = 1
         tuple_ = move(board, player)
-        print("tuple: ",tuple_)
         board[tuple_[0][0]][tuple_[0][1]] = 0
         board[tuple_[1][0]][tuple_[1][1]] = player
         check_ganh(board, player, tuple_)
         check_vay(board, player, tuple_)
+        if terminate(board):
+            print("player",player,"win")
 
 main(WIN, WIDTH)
