@@ -1,9 +1,8 @@
-from typing import List
 import copy
 
 
 class FlagCarry():
-    def __init__(self,  d: int, initialBoard: List[List[int]], isMax: bool):
+    def __init__(self,  d: int, initialBoard, isMax: bool):
         self.d = d
         self.initialBoard = initialBoard
         self.isMax = isMax
@@ -66,10 +65,10 @@ class FlagCarry():
                             break
                     if (allAreEnemies):
                         newBoard[i][j] = enemy_val
-    #Check xem 1 quan co co the di chuyen duoc hay khong
+    # Check xem 1 quan co co the di chuyen duoc hay khong
 
     def can_move(self, board, player, position):
-        #Check duong cheo
+        # Check duong cheo
         i = position[0]
         j = position[1]
         a = False
@@ -94,7 +93,7 @@ class FlagCarry():
                     return True
                 elif board[i+1][j-1] == -player:
                     a = True
-        #Check doc
+        # Check doc
         if i > 0:
             if board[i-1][j] == 0:
                 return True
@@ -105,7 +104,7 @@ class FlagCarry():
                 return True
             elif board[i+1][j] == -player:
                 a = True
-        #Check ngang
+        # Check ngang
         if j > 0:
             if board[i][j-1] == 0:
                 return True
@@ -122,19 +121,19 @@ class FlagCarry():
         if list_[2] == 1:
             return 1
 
-        #If list_ co the di chuyen,return 1
+        # If list_ co the di chuyen,return 1
         if self.can_move(board, player, (list_[0], list_[1])):
             list_[2] = 1
             return 1
 
-        #If list_ khong the di chuyen
+        # If list_ khong the di chuyen
         if not self.can_move(board, player, (list_[0], list_[1])):
             a = False
             i = list_[0]
             j = list_[1]
             for list__ in check_list:
                 if list__ not in already_check and list__ != list_:
-                    #Xet theo duong cheo
+                    # Xet theo duong cheo
                     already_check_ = [list(x) for x in already_check]
                     already_check_.append(list__)
                     if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
@@ -150,7 +149,7 @@ class FlagCarry():
                         if i-1 == list__[0] and j-1 == list__[1]:
                             a = (a or self.check_vay_(board, player,
                                  list__, check_list, already_check_))
-                    #Xet theo duong ngang doc
+                    # Xet theo duong ngang doc
                     if i+1 == list__[0] and j == list__[1]:
                         a = (a or self.check_vay_(board, player,
                              list__, check_list, already_check_))
@@ -163,7 +162,7 @@ class FlagCarry():
                     if i == list__[0] and j+1 == list__[1]:
                         a = (a or self.check_vay_(board, player,
                              list__, check_list, already_check_))
-            #if list_ bi co lap
+            # if list_ bi co lap
             if a == False:
                 list_[2] = 0
                 return 0
@@ -171,7 +170,7 @@ class FlagCarry():
                 list_[2] = 1
                 return 1
 
-    #Check vay
+    # Check vay
     def check_vay(self, board, player):
         check_list = []
         for i in range(5):
@@ -184,7 +183,6 @@ class FlagCarry():
         for list_ in check_list:
             if list_[2] == 0:
                 board[list_[0]][list_[1]] = player
-
 
     def getNewBoard(self, board, move, isMax):
         newBoard = copy.deepcopy(board)
@@ -212,7 +210,7 @@ class FlagCarry():
 
         return newBoard
 
-    def helper(self, board: List[List[int]], isMax: bool, currentDepth: int, alpha: int, beta: int):
+    def helper(self, board, isMax: bool, currentDepth: int, alpha: int, beta: int):
         if (currentDepth >= self.d):
             return (self.countVal(board), 0)
         possibleMoves = self.getPossibleMoves(isMax, board)
@@ -230,7 +228,7 @@ class FlagCarry():
                 val = self.helper(newBoard, not isMax,
                                   currentDepth+1, alpha, beta)[0]
                 if (best_val < val):
-                best_move = move
+                    best_move = move
                     best_val = val
                 if (alpha < val):
                     alpha = val
@@ -247,8 +245,8 @@ class FlagCarry():
             val = self.helper(newBoard, not isMax,
                               currentDepth+1, alpha, beta)[0]
             if (best_val > val):
-            best_move = move
-                best_val = val 
+                best_move = move
+                best_val = val
             if (beta > val):
                 beta = val
             # Maximum won't allow min to go this way
@@ -260,10 +258,15 @@ class FlagCarry():
         return self.helper(self.initialBoard, self.isMax, 0, -1000, 1000)[1]
 
 
-initialBoard = [[1, 1, 0, 1, 1],
-                [-1, 0, 1, -1, 1],
-                [-1, 0, 1, -1, 1],
-                [-1, 0, 1, -1, 1],
-                [-1, -1, 1, 1, 1]]
+initialBoard = [[1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1],
+                [1, 0, 0, 0, -1], 
+                [-1, 0, 0, 0, -1], 
+                [-1, -1, -1, -1, -1]]
 
+def move(board, player):
+    return FlagCarry(4, board, player == 1).move()
+
+
+move(initialBoard, 1)
 #FlagCarry(7, initialBoard, True).move()

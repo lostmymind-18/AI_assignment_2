@@ -324,9 +324,9 @@ def board_change(board, player, move):
 #aimove
 def ai_move(board, player):
     if player == 1:
-        return FlagCarry(3, board, True).move()
+        return FlagCarry(6, board, True).move()
     elif player == -1:
-        return FlagCarry(3, board, False).move()
+        return FlagCarry(2, board, False).move()
 
 #move 
 def move(board, player):
