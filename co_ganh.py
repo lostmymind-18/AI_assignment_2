@@ -1,5 +1,6 @@
 import pygame
 import math
+import time
 import os
 from FlagCarry import FlagCarry
 
@@ -324,18 +325,21 @@ def board_change(board, player, move):
 #aimove
 def ai_move(board, player):
     if player == 1:
-        return FlagCarry(6, board, True).move()
+        return FlagCarry(5, board, True).move()
     elif player == -1:
         return FlagCarry(2, board, False).move()
 
 #move 
 def move(board, player):
+    
     if(player == 1):
         print("It's white's move ")
         return ai_move(board, player)
     else:
         print("It's black's move ")
         return ai_move(board, player)
+    
+
     
 
 
@@ -356,7 +360,10 @@ def main(win, width):
             player = -1
         elif player == -1:
             player = 1
+        start = time.time()
         tuple_ = move(board, player)
+        end = time.time()
+        print("Time: ", end - start)
         board[tuple_[0][0]][tuple_[0][1]] = 0
         board[tuple_[1][0]][tuple_[1][1]] = player
         check_ganh(board, player, tuple_)

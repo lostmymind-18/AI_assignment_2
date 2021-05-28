@@ -18,22 +18,39 @@ class FlagCarry():
 
     def getPossibleMoves(self, isMax, board):
         matchingVal = 1 if (isMax) else -1
-        possibleMoves = []
+        pos_move = []
         for i, row in enumerate(board):
             for j, cell in enumerate(row):
                 if (cell == matchingVal):
-                    start = (i, j)
-                    possibleEndFromCell = [
-                        (i+1, j), (i+1, j+1), (i+1, j-1),
-                        (i, j+1), (i, j-1),
-                        (i-1, j), (i-1, j+1), (i-1, j-1),
-                    ]
-                    # Check if end is inside board
-                    for end in possibleEndFromCell:
-                        if (end[0] in range(0, len(board))) and (end[1] in range(0, len(row))) and (board[end[0]][end[1]] == 0):
-                            possibleMoves.append((start, end))
+                    if (i, j) not in ((0,1),(0,3),(1,0),(3,0),(1,4),(3,4),(4,1),(4,3),(1,2),(2,1),(2,3),(3,2)):
+                        if i > 0 and j > 0:
+                            if board[i-1][j-1] == 0:
+                                pos_move.append(((i,j),(i-1,j-1)))
+                        if i < 4 and j < 4:
+                            if board[i+1][j+1] == 0:
+                                pos_move.append(((i,j),(i+1,j+1)))
+                        if i > 0 and j < 4:
+                            if board[i-1][j+1] == 0:
+                                pos_move.append(((i,j),(i-1,j+1)))
+                        if i < 4 and j > 0:
+                            if board[i+1][j-1] == 0:
+                                pos_move.append(((i,j),(i+1,j-1)))
+            #Check doc
+                    if i > 0:
+                        if board[i-1][j] == 0:
+                            pos_move.append(((i,j),(i-1,j)))
+                    if i < 4:
+                        if board[i+1][j] == 0:
+                            pos_move.append(((i,j),(i+1,j)))
+                    #Check ngang
+                    if j > 0:
+                        if board[i][j-1] == 0:
+                            pos_move.append(((i,j),(i,j-1)))
+                    if j < 4:
+                        if board[i][j+1] == 0:
+                            pos_move.append(((i,j),(i,j+1)))
 
-        return possibleMoves
+        return pos_move
 
     def checkGanh(self, newBoard, myVal, enemyVal, posA, posB):
         # Check inside
@@ -72,7 +89,7 @@ class FlagCarry():
         i = position[0]
         j = position[1]
         a = False
-        if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
+        if (i, j) not in ((0,1),(0,3),(1,0),(3,0),(1,4),(3,4),(4,1),(4,3),(1,2),(2,1),(2,3),(3,2)):
             if i > 0 and j > 0:
                 if board[i - 1][j-1] == 0:
                     return True
