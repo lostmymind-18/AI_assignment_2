@@ -16,24 +16,45 @@ class FlagCarry():
                     sumOfMatchingVal += 1
         return sumOfMatchingVal
 
+    def check_moveable(self, board, pos):
+        if (pos[0] in range(0, len(board))) and (pos[1] in range(0, len(board[0]))) and board[pos[0]][pos[1]] == 0:
+            return True
+        return False
+
     def getPossibleMoves(self, isMax, board):
         matchingVal = 1 if (isMax) else -1
-        possibleMoves = []
+        pos_move = []
         for i, row in enumerate(board):
             for j, cell in enumerate(row):
                 if (cell == matchingVal):
                     start = (i, j)
-                    possibleEndFromCell = [
-                        (i+1, j), (i+1, j+1), (i+1, j-1),
-                        (i, j+1), (i, j-1),
-                        (i-1, j), (i-1, j+1), (i-1, j-1),
-                    ]
-                    # Check if end is inside board
-                    for end in possibleEndFromCell:
-                        if (end[0] in range(0, len(board))) and (end[1] in range(0, len(row))) and (board[end[0]][end[1]] == 0):
-                            possibleMoves.append((start, end))
 
-        return possibleMoves
+                    possibleEndFromCell = [
+                        (i+1, j),
+                        (i, j+1), (i, j-1),
+                        (i-1, j),
+                    ]
+                    if (i, j) in [(0, 0), (0, 2), (1, 1), (1, 3), (2, 0), (2, 2), (3, 1), (3, 3)]:
+                        if (board[i+1][j+1] == 0):
+                            possibleEndFromCell.append((i+1, j+1))
+
+                    if (i, j) in [(0, 2), (0, 4), (1, 1), (1, 3), (2, 4), (2, 2), (3, 1), (3, 3)]:
+                        if (board[i+1][j-1] == 0):
+                            possibleEndFromCell.append((i+1, j-1))
+
+                    if (i, j) in [(1, 1), (1, 3), (2, 0), (2, 2), (3, 1), (3, 3), (4, 0), (4, 2)]:
+                        if (board[i-1][j+1] == 0):
+                            possibleEndFromCell.append((i-1, j+1))
+
+                    if (i, j) in [(1, 1), (1, 3), (2, 4), (2, 2), (3, 1), (3, 3), (4, 4), (4, 2)]:
+                        if (board[i-1][j-1] == 0):
+                            possibleEndFromCell.append((i-1, j-1))
+
+                    for end in possibleEndFromCell:
+                        if (self.check_moveable(board, end)):
+                            pos_move.append((start, end))
+
+        return pos_move
 
     def checkGanh(self, newBoard, myVal, enemyVal, posA, posB):
         # Check inside
@@ -72,7 +93,7 @@ class FlagCarry():
         i = position[0]
         j = position[1]
         a = False
-        if not ((i == 0 and j == 1) or (i == 0 and j == 3) or (i == 1 and j == 0) or (i == 3 and j == 0) or (i == 1 and j == 4) or (i == 3 and j == 4) or (i == 4 and j == 1) or (i == 4 and j == 3)):
+        if (i, j) not in ((0, 1), (0, 3), (1, 0), (3, 0), (1, 4), (3, 4), (4, 1), (4, 3), (1, 2), (2, 1), (2, 3), (3, 2)):
             if i > 0 and j > 0:
                 if board[i - 1][j-1] == 0:
                     return True
@@ -216,8 +237,8 @@ class FlagCarry():
         possibleMoves = self.getPossibleMoves(isMax, board)
         if (len(possibleMoves) == 0):
             if (isMax):
-                return (0, 0)
-            return (16, 0)
+                return (0,None)
+            return (16,None)
         best_move = possibleMoves[0]
 
         if (isMax):
@@ -258,15 +279,23 @@ class FlagCarry():
         return self.helper(self.initialBoard, self.isMax, 0, -1000, 1000)[1]
 
 
-initialBoard = [[1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 1],
-                [1, 0, 0, 0, -1], 
-                [-1, 0, 0, 0, -1], 
-                [-1, -1, -1, -1, -1]]
+initialBoard = [
+    [1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+]
+# initialBoard = [[1, 1, 0, 1, 1],
+#                 [-1, -1, -1, 0, 1],
+#                 [0, 0, 0, 0, 1],
+#                 [-1, -1, 0, 0, -1],
+#                 [0, -1, -1, -1, -1]]
+
 
 def move(board, player):
     return FlagCarry(4, board, player == 1).move()
 
 
-move(initialBoard, 1)
+move(initialBoard, -1)
 #FlagCarry(7, initialBoard, True).move()
