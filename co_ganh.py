@@ -2,7 +2,7 @@ import pygame
 import math
 import os
 import time
-from FlagCarry import FlagCarry
+#from FlagCarry import FlagCarry
 
 #Width of screen
 pygame.init()
